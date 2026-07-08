@@ -289,6 +289,11 @@
   .apple-row{ display:flex; gap:.5rem; }
   .apple{ font-size:1.8rem; }
   .sum-line{ font-family:'Baloo 2'; font-weight:800; font-size:1.4rem; color:var(--ping-deep); margin-top:.75rem; }
+  .method-card{ background:var(--court-alt); border:2px dashed var(--line); border-radius:16px; padding:1.1rem 1.25rem; margin-top:1.5rem; }
+  .method-card .method-title{ font-weight:800; margin-bottom:.6rem; }
+  .method-steps{ display:flex; flex-direction:column; gap:.4rem; font-family:'Baloo 2'; font-variant-numeric:tabular-nums; }
+  .method-steps .step{ display:flex; align-items:center; gap:.5rem; }
+  .method-steps .step .tag{ font-size:.7rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; min-width:5.5ch; }
 
   /* ---------- multiplication grid ---------- */
   .grid-meta{ display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin:1.25rem 0; }
@@ -484,6 +489,16 @@
             <div class="apple-row"><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span></div>
           </div>
           <p class="sum-line">3 × 4 = 12 apples!</p>
+          <div class="method-card">
+            <p class="method-title">Bigger numbers, same idea: 23 × 4 <button class="speak-btn" style="width:1.9rem;height:1.9rem;font-size:.85rem;vertical-align:middle;" data-speak="Bigger numbers, same idea. 23 times 4. Break 23 into 20 plus 3. 20 times 4 is 80. 3 times 4 is 12. 80 plus 12 is 92." aria-label="Read the multiplication method aloud" type="button">🔊</button></p>
+            <div class="method-steps">
+              <div class="step"><span class="tag">Split</span> 23 = <strong>20</strong> + <strong>3</strong></div>
+              <div class="step"><span class="tag">Tens</span> 20 × 4 = <strong>80</strong></div>
+              <div class="step"><span class="tag">Ones</span> 3 × 4 = <strong>12</strong></div>
+              <div class="step"><span class="tag">Add</span> 80 + 12 = <strong>92</strong></div>
+            </div>
+            <p class="sum-line">23 × 4 = 92!</p>
+          </div>
         </div>
         <div>
           <div style="display:flex; gap:.9rem; align-items:flex-start;">
@@ -504,6 +519,16 @@
             <div class="apple-row"><span class="apple">🧺</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span></div>
           </div>
           <p class="sum-line" style="color:var(--bounce-deep);">12 ÷ 3 = 4 apples each!</p>
+          <div class="method-card">
+            <p class="method-title">Bigger numbers, same idea: 96 ÷ 4 <button class="speak-btn" style="width:1.9rem;height:1.9rem;font-size:.85rem;vertical-align:middle;" data-speak="Bigger numbers, same idea. 96 divided by 4. Break 96 into 80 plus 16. 80 divided by 4 is 20. 16 divided by 4 is 4. 20 plus 4 is 24." aria-label="Read the division method aloud" type="button">🔊</button></p>
+            <div class="method-steps">
+              <div class="step"><span class="tag">Split</span> 96 = <strong>80</strong> + <strong>16</strong></div>
+              <div class="step"><span class="tag">Tens</span> 80 ÷ 4 = <strong>20</strong></div>
+              <div class="step"><span class="tag">Ones</span> 16 ÷ 4 = <strong>4</strong></div>
+              <div class="step"><span class="tag">Add</span> 20 + 4 = <strong>24</strong></div>
+            </div>
+            <p class="sum-line" style="color:var(--bounce-deep);">96 ÷ 4 = 24!</p>
+          </div>
         </div>
       </div>
     </div>
@@ -540,7 +565,7 @@
     <div class="wrap card">
       <div class="eyebrow"><span class="level-dot">4</span> Quiz Championship</div>
       <h2 class="title">Six quick questions, six shiny stars</h2>
-      <p class="lede" style="margin-top:.5rem;">Starping hands out a star for every correct answer — get them all and she's yours to catch.</p>
+      <p class="lede" style="margin-top:.5rem;">Bigger numbers now! Starping hands out a star for every correct answer, and always shows you how she solved it. Get all six stars and she's yours to catch.</p>
       <div class="quiz-card">
         <div class="quiz-progress" id="quizProgress"></div>
         <div id="quizArea"></div>
@@ -878,12 +903,18 @@
 
   /* ---------------- quiz ---------------- */
   var QUIZ = [
-    {q:"3 × 4 = ?", choices:[7,12,10,9], answer:12},
-    {q:"20 ÷ 5 = ?", choices:[4,5,3,6], answer:4},
-    {q:"6 × 6 = ?", choices:[12,36,30,24], answer:36},
-    {q:"18 ÷ 3 = ?", choices:[6,7,9,5], answer:6},
-    {q:"7 × 8 = ?", choices:[54,56,64,48], answer:56},
-    {q:"45 ÷ 9 = ?", choices:[5,6,4,9], answer:5}
+    {q:"23 × 4 = ?", choices:[92,86,88,74], answer:92,
+     steps:["Split 23 = 20 + 3","Tens: 20 × 4 = 80","Ones: 3 × 4 = 12","Add: 80 + 12 = 92"]},
+    {q:"96 ÷ 4 = ?", choices:[22,24,26,20], answer:24,
+     steps:["Split 96 = 80 + 16","Tens: 80 ÷ 4 = 20","Ones: 16 ÷ 4 = 4","Add: 20 + 4 = 24"]},
+    {q:"34 × 3 = ?", choices:[102,96,112,92], answer:102,
+     steps:["Split 34 = 30 + 4","Tens: 30 × 3 = 90","Ones: 4 × 3 = 12","Add: 90 + 12 = 102"]},
+    {q:"84 ÷ 6 = ?", choices:[12,16,13,14], answer:14,
+     steps:["Split 84 = 60 + 24","Tens: 60 ÷ 6 = 10","Ones: 24 ÷ 6 = 4","Add: 10 + 4 = 14"]},
+    {q:"45 × 6 = ?", choices:[270,260,250,240], answer:270,
+     steps:["Split 45 = 40 + 5","Tens: 40 × 6 = 240","Ones: 5 × 6 = 30","Add: 240 + 30 = 270"]},
+    {q:"91 ÷ 7 = ?", choices:[12,14,11,13], answer:13,
+     steps:["Split 91 = 70 + 21","Tens: 70 ÷ 7 = 10","Ones: 21 ÷ 7 = 3","Add: 10 + 3 = 13"]}
   ];
   var quizArea = document.getElementById("quizArea");
   var quizProgressEl = document.getElementById("quizProgress");
@@ -914,7 +945,16 @@
       "<div class='quiz-choices'>" +
         item.choices.map(function(ch){ return "<button type='button' class='choice' data-value='"+ch+"'>"+ch+"</button>"; }).join("") +
       "</div>" +
-      "<p class='quiz-feedback' id='quizFeedback'></p>";
+      "<p class='quiz-feedback' id='quizFeedback'></p>" +
+      "<div class='method-card' id='quizSteps' style='display:none;'>" +
+        "<p class='method-title'>How it's done</p>" +
+        "<div class='method-steps'>" +
+          item.steps.map(function(s){
+            var parts = s.split(": ");
+            return parts.length>1 ? "<div class='step'><span class='tag'>"+parts[0]+"</span>"+parts[1]+"</div>" : "<div class='step'>"+s+"</div>";
+          }).join("") +
+        "</div>" +
+      "</div>";
   }
   quizArea.addEventListener("click", function(e){
     var choice = e.target.closest(".choice");
@@ -937,11 +977,12 @@
       feedback.textContent = "Not quite — the answer is " + item.answer + ". You'll get the next one!";
       autoSpeak("Not quite. The answer is " + item.answer + ".");
     }
+    document.getElementById("quizSteps").style.display = "block";
     state.quizAnswered++;
     quizProgressEl.querySelectorAll("span")[quizIndex].classList.add("done");
     updateProgress(true);
     saveState();
-    setTimeout(function(){ quizIndex++; renderQuiz(); }, 1400);
+    setTimeout(function(){ quizIndex++; renderQuiz(); }, 3200);
   });
   renderQuiz();
 
