@@ -368,6 +368,13 @@
   .quiz-done{ text-align:center; }
   .stars-earned{ font-size:2.4rem; letter-spacing:.2rem; }
 
+  /* ---------- arcade ---------- */
+  .arcade-stats{ display:flex; gap:.75rem; flex-wrap:wrap; align-items:center; }
+  .arcade-timer-track{ height:.9rem; border-radius:999px; background:var(--court-alt); border:2px solid var(--line); overflow:hidden; }
+  .arcade-timer-fill{ height:100%; width:100%; background:linear-gradient(90deg,var(--zest),var(--ping)); border-radius:999px; transition:width .12s linear; }
+  .arcade-problem{ font-family:'Baloo 2'; font-weight:800; font-size:1.9rem; margin:1.1rem 0; font-variant-numeric:tabular-nums; }
+  .choice.timeout{ background:var(--court-alt); border-color:var(--line); opacity:.6; }
+
   /* ---------- progress / stickers ---------- */
   .bar-track{ background:var(--court-alt); border:2px solid var(--line); border-radius:999px; height:1.6rem; overflow:hidden; }
   .bar-fill{ height:100%; background:linear-gradient(90deg,var(--green),var(--bounce)); border-radius:999px; transition:width .5s cubic-bezier(.4,1.4,.4,1); width:0%; }
@@ -415,6 +422,7 @@
       <a href="#multiply">× Multiply</a>
       <a href="#divide">÷ Divide</a>
       <a href="#quiz">Quiz</a>
+      <a href="#arcade">Power Rush</a>
       <a href="#progress">Collection</a>
       <a href="#grownups">Grown-Ups</a>
     </div>
@@ -573,12 +581,46 @@
     </div>
   </section>
 
-  <!-- LEVEL 5: PROGRESS -->
+  <!-- LEVEL 5: ARCADE -->
+  <section id="arcade">
+    <div class="wrap card">
+      <div class="eyebrow"><span class="level-dot">5</span> Power Rush Arcade</div>
+      <h2 class="title">Catch the answer before time runs out</h2>
+      <p class="lede" style="margin-top:.5rem;">Two‑ and three‑digit multiplication and division, against the clock. Tap the correct answer before Winping's timer bar empties to keep your streak alive! <button class="speak-btn" data-speak="Two and three digit multiplication and division, against the clock. Tap the correct answer before the timer bar empties to keep your streak alive." aria-label="Read instructions aloud" type="button">🔊</button></p>
+
+      <div id="arcadeIntro" style="margin-top:1.5rem;">
+        <div class="arcade-stats">
+          <span class="pill-stat">Best streak: <span id="arcadeBestDisplay">0</span></span>
+          <span class="pill-stat">Caught: <span id="arcadeCaughtDisplay">0</span></span>
+        </div>
+        <button class="btn" id="arcadeStart" type="button" style="margin-top:1rem; background:var(--zest); color:var(--ink);">▶ Start Power Rush</button>
+      </div>
+
+      <div id="arcadeGame" style="display:none; margin-top:1.5rem;">
+        <div class="arcade-stats">
+          <span class="pill-stat" id="arcadeRoundLabel">Round 1 / 10</span>
+          <span class="pill-stat">Streak: <span id="arcadeStreakDisplay">0</span> 🔥</span>
+        </div>
+        <div class="arcade-timer-track" style="margin-top:.85rem;"><div class="arcade-timer-fill" id="arcadeTimerFill"></div></div>
+        <p class="arcade-problem" id="arcadeProblem"></p>
+        <div class="quiz-choices" id="arcadeChoices"></div>
+        <p class="quiz-feedback" id="arcadeFeedback"></p>
+      </div>
+
+      <div id="arcadeSummary" class="quiz-done" style="display:none; margin-top:1.5rem;">
+        <div class="stars-earned" id="arcadeSummaryStars"></div>
+        <p id="arcadeSummaryText" style="font-family:'Baloo 2'; font-size:1.3rem; margin-top:1rem;"></p>
+        <button class="btn" id="arcadeReplay" type="button" style="margin-top:1rem;">Play Power Rush Again</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL 6: PROGRESS -->
   <section id="progress">
     <div class="wrap card">
-      <div class="eyebrow"><span class="level-dot">5</span> Teenieping Collection</div>
+      <div class="eyebrow"><span class="level-dot">6</span> Teenieping Collection</div>
       <h2 class="title">Catch every Teenieping</h2>
-      <p class="lede" style="margin-top:.5rem;">Explore squares, finish puzzles and ace the quiz to fill your bar and catch Timesping, Shareping, Starping and Winping, one at a time.</p>
+      <p class="lede" style="margin-top:.5rem;">Explore squares, finish puzzles, ace the quiz and win Power Rush rounds to fill your bar and catch Timesping, Shareping, Starping and Winping, one at a time.</p>
       <div style="margin-top:1.5rem;">
         <div class="bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar" aria-label="Overall adventure progress">
           <div class="bar-fill" id="progressFill"></div>
@@ -627,6 +669,8 @@
     puzzlesSolved: [],
     quizCorrect: 0,
     quizAnswered: 0,
+    arcadeCorrect: 0,
+    arcadeBestStreak: 0,
     narrate: false
   }, loadState());
 
@@ -702,12 +746,13 @@
   }).join("");
 
   function computeProgress(){
-    var gridPct = Math.min(state.gridRevealed.length / 20, 1) * 25;
-    var puzzlePct = Math.min(state.puzzlesSolved.length / 4, 1) * 25;
-    var quizPct = Math.min(state.quizCorrect / 6, 1) * 25;
-    var basePct = gridPct + puzzlePct + quizPct;
-    var allDone = state.gridRevealed.length >= 20 && state.puzzlesSolved.length >= 4 && state.quizCorrect >= 6;
-    var bonus = allDone ? 25 : 0;
+    var gridPct = Math.min(state.gridRevealed.length / 20, 1) * 20;
+    var puzzlePct = Math.min(state.puzzlesSolved.length / 4, 1) * 20;
+    var quizPct = Math.min(state.quizCorrect / 6, 1) * 20;
+    var arcadePct = Math.min(state.arcadeCorrect / 8, 1) * 20;
+    var basePct = gridPct + puzzlePct + quizPct + arcadePct;
+    var allDone = state.gridRevealed.length >= 20 && state.puzzlesSolved.length >= 4 && state.quizCorrect >= 6 && state.arcadeCorrect >= 8;
+    var bonus = allDone ? 20 : 0;
     return Math.round(Math.min(basePct + bonus, 100));
   }
   function updateProgress(announce){
@@ -985,6 +1030,122 @@
     setTimeout(function(){ quizIndex++; renderQuiz(); }, 3200);
   });
   renderQuiz();
+
+  /* ---------------- arcade: power rush ---------------- */
+  var ARCADE_POOL = [
+    {q:"23 × 4 = ?", choices:[92,88,86,96], answer:92},
+    {q:"142 × 3 = ?", choices:[426,416,436,412], answer:426},
+    {q:"96 ÷ 4 = ?", choices:[24,22,26,20], answer:24},
+    {q:"315 ÷ 5 = ?", choices:[63,61,65,53], answer:63},
+    {q:"56 × 7 = ?", choices:[392,382,402,378], answer:392},
+    {q:"234 × 2 = ?", choices:[468,458,478,486], answer:468},
+    {q:"84 ÷ 7 = ?", choices:[12,11,13,14], answer:12},
+    {q:"424 ÷ 4 = ?", choices:[106,104,116,114], answer:106},
+    {q:"47 × 6 = ?", choices:[282,272,292,288], answer:282},
+    {q:"128 × 3 = ?", choices:[384,374,394,382], answer:384}
+  ];
+  var TIME_LIMIT = 10000;
+  var arcadeQueue = [], arcadeIdx = 0, arcadeScore = 0, arcadeStreak = 0;
+  var arcadeTimerHandle = null, arcadeTimeLeft = TIME_LIMIT;
+
+  function shuffled(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  document.getElementById("arcadeBestDisplay").textContent = state.arcadeBestStreak;
+  document.getElementById("arcadeCaughtDisplay").textContent = state.arcadeCorrect;
+
+  document.getElementById("arcadeStart").addEventListener("click", startArcade);
+  document.getElementById("arcadeReplay").addEventListener("click", startArcade);
+
+  function startArcade(){
+    arcadeQueue = shuffled(ARCADE_POOL);
+    arcadeIdx = 0; arcadeScore = 0; arcadeStreak = 0;
+    document.getElementById("arcadeIntro").style.display = "none";
+    document.getElementById("arcadeSummary").style.display = "none";
+    document.getElementById("arcadeGame").style.display = "block";
+    autoSpeak("Power Rush started! Catch the right answer before time runs out.");
+    renderArcadeRound();
+  }
+
+  function renderArcadeRound(){
+    clearInterval(arcadeTimerHandle);
+    if(arcadeIdx >= arcadeQueue.length){ finishArcade(); return; }
+    var item = arcadeQueue[arcadeIdx];
+    document.getElementById("arcadeRoundLabel").textContent = "Round " + (arcadeIdx+1) + " / " + arcadeQueue.length;
+    document.getElementById("arcadeStreakDisplay").textContent = arcadeStreak;
+    document.getElementById("arcadeProblem").textContent = item.q;
+    document.getElementById("arcadeFeedback").textContent = "";
+    var choiceOrder = shuffled(item.choices);
+    document.getElementById("arcadeChoices").innerHTML = choiceOrder.map(function(ch){
+      return "<button type='button' class='choice' data-value='"+ch+"'>"+ch+"</button>";
+    }).join("");
+    arcadeTimeLeft = TIME_LIMIT;
+    var fill = document.getElementById("arcadeTimerFill");
+    fill.style.width = "100%";
+    arcadeTimerHandle = setInterval(function(){
+      arcadeTimeLeft -= 100;
+      fill.style.width = Math.max(arcadeTimeLeft / TIME_LIMIT * 100, 0) + "%";
+      if(arcadeTimeLeft <= 0){ handleArcadeAnswer(null); }
+    }, 100);
+  }
+
+  document.getElementById("arcadeGame").addEventListener("click", function(e){
+    var choice = e.target.closest(".choice");
+    if(!choice || choice.disabled) return;
+    handleArcadeAnswer(Number(choice.getAttribute("data-value")), choice);
+  });
+
+  function handleArcadeAnswer(value, choiceEl){
+    clearInterval(arcadeTimerHandle);
+    var item = arcadeQueue[arcadeIdx];
+    var buttons = document.querySelectorAll("#arcadeChoices .choice");
+    buttons.forEach(function(c){ c.disabled = true; });
+    var feedback = document.getElementById("arcadeFeedback");
+    var correct = value === item.answer;
+    if(value === null){
+      buttons.forEach(function(c){ if(Number(c.getAttribute("data-value"))===item.answer) c.classList.add("correct"); else c.classList.add("timeout"); });
+      feedback.textContent = "Time's up! It was " + item.answer + ".";
+      feedback.className = "quiz-feedback";
+      arcadeStreak = 0;
+      autoSpeak("Time's up. The answer was " + item.answer + ".");
+    } else if(correct){
+      choiceEl.classList.add("correct");
+      feedback.textContent = "Caught it! " + item.q.replace("?", String(item.answer));
+      feedback.className = "quiz-feedback";
+      ping(820);
+      arcadeScore++; arcadeStreak++;
+      state.arcadeCorrect++;
+      if(arcadeStreak > state.arcadeBestStreak){ state.arcadeBestStreak = arcadeStreak; }
+      autoSpeak("Caught it!");
+    } else {
+      choiceEl.classList.add("wrong");
+      buttons.forEach(function(c){ if(Number(c.getAttribute("data-value"))===item.answer) c.classList.add("correct"); });
+      feedback.textContent = "Not quite — it was " + item.answer + ".";
+      feedback.className = "quiz-feedback";
+      arcadeStreak = 0;
+      autoSpeak("Not quite. The answer was " + item.answer + ".");
+    }
+    document.getElementById("arcadeStreakDisplay").textContent = arcadeStreak;
+    document.getElementById("arcadeBestDisplay").textContent = state.arcadeBestStreak;
+    document.getElementById("arcadeCaughtDisplay").textContent = state.arcadeCorrect;
+    updateProgress(true);
+    saveState();
+    arcadeIdx++;
+    setTimeout(renderArcadeRound, 1300);
+  }
+
+  function finishArcade(){
+    document.getElementById("arcadeGame").style.display = "none";
+    document.getElementById("arcadeSummary").style.display = "block";
+    var total = arcadeQueue.length;
+    document.getElementById("arcadeSummaryStars").textContent = "⭐".repeat(arcadeScore) + "☆".repeat(Math.max(total-arcadeScore,0));
+    document.getElementById("arcadeSummaryText").textContent =
+      "You caught " + arcadeScore + " out of " + total + ", with a best streak of " + state.arcadeBestStreak + "!";
+    document.getElementById("arcadeIntro").style.display = "block";
+    autoSpeak("Power Rush complete! You caught " + arcadeScore + " out of " + total + ".");
+  }
 
   /* ---------------- printable worksheet ---------------- */
   document.getElementById("printWorksheet").addEventListener("click", function(){
