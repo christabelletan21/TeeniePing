@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teenie Ping Math Adventure</title>
+<style>
+  :root{
+    --court:#FFF7EA;
+    --court-alt:#FFEEDA;
+    --card:#FFFFFF;
+    --ink:#2E2350;
+    --ink-soft:#645B82;
+    --ping:#FF5C93;
+    --ping-deep:#C11360;
+    --bounce:#2AB9E0;
+    --bounce-deep:#0E7593;
+    --zest:#FFB92E;
+    --zest-deep:#8F5B00;
+    --green:#2FBE7E;
+    --green-deep:#0E7A4C;
+    --line: rgba(46,35,80,0.14);
+    --shadow: rgba(46,35,80,0.20);
+    --focus: #1350C4;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --court:#1B1533;
+      --court-alt:#251C46;
+      --card:#2A2050;
+      --ink:#FDF3E4;
+      --ink-soft:#C6BADD;
+      --ping:#FF86B4;
+      --ping-deep:#FFC3DC;
+      --bounce:#5AD3F5;
+      --bounce-deep:#BCEFFC;
+      --zest:#FFD166;
+      --zest-deep:#FFE7AE;
+      --green:#5FE3A6;
+      --green-deep:#C3F6DF;
+      --line: rgba(253,243,228,0.16);
+      --shadow: rgba(0,0,0,0.45);
+      --focus:#7EB2FF;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --court:#1B1533;
+    --court-alt:#251C46;
+    --card:#2A2050;
+    --ink:#FDF3E4;
+    --ink-soft:#C6BADD;
+    --ping:#FF86B4;
+    --ping-deep:#FFC3DC;
+    --bounce:#5AD3F5;
+    --bounce-deep:#BCEFFC;
+    --zest:#FFD166;
+    --zest-deep:#FFE7AE;
+    --green:#5FE3A6;
+    --green-deep:#C3F6DF;
+    --line: rgba(253,243,228,0.16);
+    --shadow: rgba(0,0,0,0.45);
+    --focus:#7EB2FF;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"]{
+    --court:#FFF7EA;
+    --court-alt:#FFEEDA;
+    --card:#FFFFFF;
+    --ink:#2E2350;
+    --ink-soft:#645B82;
+    --ping:#FF5C93;
+    --ping-deep:#C11360;
+    --bounce:#2AB9E0;
+    --bounce-deep:#0E7593;
+    --zest:#FFB92E;
+    --zest-deep:#8F5B00;
+    --green:#2FBE7E;
+    --green-deep:#0E7A4C;
+    --line: rgba(46,35,80,0.14);
+    --shadow: rgba(46,35,80,0.20);
+    --focus: #1350C4;
+    color-scheme: light;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *,*::before,*::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+  body{
+    margin:0;
+    background:var(--court);
+    color:var(--ink);
+    font-family:'Nunito',-apple-system,'Segoe UI',sans-serif;
+    font-size:18px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{
+    font-family:'Baloo 2','Nunito',sans-serif;
+    text-wrap:balance;
+    margin:0;
+    color:var(--ink);
+  }
+  p{ margin:0; }
+  img,svg{ max-width:100%; }
+  button{ font-family:inherit; }
+  a{ color:var(--ping-deep); }
+
+  .visually-hidden{
+    position:absolute; width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+  .skip-link{
+    position:absolute; left:1rem; top:-3rem;
+    background:var(--ink); color:var(--court); padding:.6rem 1rem;
+    border-radius:0 0 .6rem .6rem; z-index:100; transition:top .2s ease;
+    text-decoration:none; font-weight:800;
+  }
+  .skip-link:focus{ top:0; }
+
+  :focus-visible{ outline:3px solid var(--focus); outline-offset:3px; border-radius:6px; }
+
+  /* ---------- layout shells ---------- */
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 1.5rem; }
+  .card{
+    background:var(--card);
+    border:3px solid var(--line);
+    border-radius:28px;
+    box-shadow:0 10px 0 var(--shadow);
+    padding:clamp(1.25rem,3vw,2.5rem);
+  }
+  section{ position:relative; padding:4rem 0; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:.5rem;
+    font-family:'Baloo 2'; font-weight:700; font-size:.85rem;
+    letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent-deep, var(--ping-deep));
+    background:color-mix(in srgb, var(--accent, var(--ping)) 16%, var(--card));
+    border-radius:999px; padding:.35rem .9rem; margin-bottom:.9rem;
+  }
+  .level-dot{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:1.6rem; height:1.6rem; border-radius:50%;
+    background:var(--accent, var(--ping)); color:#fff; font-weight:800; font-size:.85rem;
+  }
+  h2.title{ font-size:clamp(1.7rem,3.4vw,2.5rem); }
+  .lede{ color:var(--ink-soft); font-size:1.15rem; max-width:60ch; }
+
+  /* section accent scoping */
+  #story{ --accent:var(--ping); --accent-deep:var(--ping-deep); }
+  #multiply{ --accent:var(--ping); --accent-deep:var(--ping-deep); }
+  #divide{ --accent:var(--bounce); --accent-deep:var(--bounce-deep); }
+  #quiz{ --accent:var(--zest); --accent-deep:var(--zest-deep); }
+  #progress{ --accent:var(--green); --accent-deep:var(--green-deep); }
+
+  /* ---------- nav ---------- */
+  .topnav{
+    position:sticky; top:0; z-index:50;
+    background:color-mix(in srgb, var(--court) 88%, transparent);
+    backdrop-filter:blur(8px);
+    border-bottom:3px solid var(--line);
+  }
+  .topnav .wrap{ display:flex; align-items:center; gap:1rem; padding:.7rem 1.5rem; overflow-x:auto; }
+  .brand{ display:flex; align-items:center; gap:.5rem; font-family:'Baloo 2'; font-weight:800; font-size:1.1rem; white-space:nowrap; }
+  .brand .dot{ width:.7rem;height:.7rem;border-radius:50%; background:var(--ping); box-shadow:0 0 0 4px color-mix(in srgb, var(--ping) 25%, transparent); }
+  .navlinks{ display:flex; gap:.4rem; flex-wrap:nowrap; }
+  .navlinks a{
+    text-decoration:none; font-weight:700; font-size:.9rem; color:var(--ink);
+    padding:.5rem .85rem; border-radius:999px; white-space:nowrap;
+    border:2px solid transparent;
+  }
+  .navlinks a:hover{ border-color:var(--line); }
+  .narrate-toggle{
+    margin-left:auto; display:flex; align-items:center; gap:.5rem;
+    border:2px solid var(--line); background:var(--card); color:var(--ink);
+    border-radius:999px; padding:.5rem .9rem; font-weight:800; cursor:pointer; white-space:nowrap;
+  }
+  .narrate-toggle[aria-pressed="true"]{ background:var(--ping); color:#fff; border-color:var(--ping); }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex; align-items:center; gap:.5rem;
+    font-family:'Baloo 2'; font-weight:700; font-size:1.05rem;
+    padding:.85rem 1.6rem; border-radius:999px; border:3px solid var(--ink);
+    background:var(--accent,var(--ping)); color:#fff;
+    cursor:pointer; box-shadow:0 6px 0 var(--ink);
+    transition:transform .12s ease, box-shadow .12s ease;
+    text-decoration:none;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn:active{ transform:translateY(3px); box-shadow:0 2px 0 var(--ink); }
+  .btn.ghost{ background:transparent; color:var(--ink); box-shadow:none; }
+  .btn.small{ padding:.5rem 1rem; font-size:.9rem; box-shadow:0 4px 0 var(--ink); }
+  .speak-btn{
+    border:2px solid var(--line); background:var(--card); color:var(--ink);
+    width:2.4rem;height:2.4rem;border-radius:50%; cursor:pointer; font-size:1.05rem;
+    flex:none; display:inline-flex; align-items:center; justify-content:center;
+  }
+  .speak-btn:hover{ border-color:var(--accent,var(--ping)); }
+
+  /* ---------- hero ---------- */
+  .hero{ padding-top:2.5rem; overflow:hidden; }
+  .hero-inner{ display:grid; grid-template-columns:1.1fr .9fr; gap:2.5rem; align-items:center; }
+  @media (max-width:820px){ .hero-inner{ grid-template-columns:1fr; } }
+  .hero h1{ font-size:clamp(2.1rem,5vw,3.4rem); line-height:1.05; }
+  .hero h1 .hl{ color:var(--ping); }
+  .hero-actions{ display:flex; gap:1rem; align-items:center; margin-top:1.6rem; flex-wrap:wrap; }
+  .hero-stage{ position:relative; height:320px; }
+  .float-ball{
+    position:absolute; border-radius:50%; opacity:.85;
+    animation:drift 6s ease-in-out infinite;
+  }
+  @keyframes drift{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-18px) } }
+  @media (prefers-reduced-motion: reduce){ .float-ball{ animation:none; } }
+
+  /* ---------- mascots ---------- */
+  .mascot{ position:relative; width:100px; height:100px; }
+  .mascot .wing{ position:absolute; top:22%; width:24px; height:34px; background:rgba(255,255,255,.5); border:2px solid var(--ink); border-radius:50% 50% 50% 8%; z-index:-1; }
+  .mascot .wing.l{ left:-15px; transform:rotate(-20deg); }
+  .mascot .wing.r{ right:-15px; transform:rotate(20deg) scaleX(-1); }
+  .mascot .body{
+    position:absolute; inset:0; border-radius:50%;
+    background:radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--m,var(--ping)) 55%, #fff), var(--m,var(--ping)));
+    border:3px solid var(--ink);
+  }
+  .mascot .antenna{ position:absolute; top:-13px; left:50%; width:4px; height:13px; background:var(--ink); border-radius:2px; transform:translateX(-50%); }
+  .mascot .gem{
+    position:absolute; top:-35px; left:50%; width:20px; height:20px;
+    background:linear-gradient(135deg,#fff, var(--m,var(--ping)));
+    border:2px solid var(--ink); border-radius:6px;
+    transform:translateX(-50%) rotate(45deg);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--m,var(--ping)) 28%, transparent);
+  }
+  .mascot .gem .sym{ display:block; transform:rotate(-45deg); font-family:'Baloo 2'; font-weight:800; font-size:.72rem; line-height:1; color:var(--ink); }
+  .mascot .eye{ position:absolute; top:40%; width:18px; height:20px; background:#fff; border-radius:50%; border:2px solid var(--ink); }
+  .mascot .eye.l{ left:24%; } .mascot .eye.r{ left:58%; }
+  .mascot .eye::before{ content:''; position:absolute; top:5px; left:5px; width:8px; height:8px; border-radius:50%; background:var(--ink); }
+  .mascot .eye::after{ content:''; position:absolute; top:4px; right:2px; width:4px; height:4px; border-radius:50%; background:#fff; }
+  .mascot .cheek{ position:absolute; top:60%; width:14px; height:8px; border-radius:50%; background:rgba(255,255,255,.55); }
+  .mascot .cheek.l{ left:14%; } .mascot .cheek.r{ right:14%; }
+  .mascot .smile{ position:absolute; top:66%; left:50%; width:20px; height:10px; border:3px solid var(--ink); border-top:none; border-radius:0 0 20px 20px; transform:translateX(-50%); }
+  .mascot.bounce{ animation:bounce 2.6s ease-in-out infinite; }
+  @keyframes bounce{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-10px) } }
+  @media (prefers-reduced-motion: reduce){ .mascot.bounce{ animation:none; } }
+  .mascot.ping{ --m:var(--ping); } .mascot.bouncec{ --m:var(--bounce); }
+  .mascot.zest{ --m:var(--zest); } .mascot.green{ --m:var(--green); }
+  .mascot-name{ text-align:center; font-family:'Baloo 2'; font-weight:700; font-size:.8rem; color:var(--ink-soft); margin-top:.35rem; }
+
+  .speech-bubble{
+    position:relative; background:var(--card); border:3px solid var(--ink);
+    border-radius:20px; padding:1rem 1.25rem; max-width:34ch;
+  }
+  .speech-bubble::after{
+    content:''; position:absolute; left:2rem; bottom:-14px;
+    border-width:14px 10px 0 0; border-style:solid;
+    border-color:var(--ink) transparent transparent transparent;
+  }
+  .speech-bubble::before{
+    content:''; position:absolute; left:2.15rem; bottom:-9px; z-index:1;
+    border-width:11px 8px 0 0; border-style:solid;
+    border-color:var(--card) transparent transparent transparent;
+  }
+
+  /* ---------- story / apples ---------- */
+  .story-grid{ display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; margin-top:2rem; }
+  @media (max-width:760px){ .story-grid{ grid-template-columns:1fr; } }
+  .apple-rows{ display:flex; flex-direction:column; gap:.5rem; }
+  .apple-row{ display:flex; gap:.5rem; }
+  .apple{ font-size:1.8rem; }
+  .sum-line{ font-family:'Baloo 2'; font-weight:800; font-size:1.4rem; color:var(--ping-deep); margin-top:.75rem; }
+  .method-card{ background:var(--court-alt); border:2px dashed var(--line); border-radius:16px; padding:1.1rem 1.25rem; margin-top:1.5rem; }
+  .method-card .method-title{ font-weight:800; margin-bottom:.6rem; }
+  .method-steps{ display:flex; flex-direction:column; gap:.4rem; font-family:'Baloo 2'; font-variant-numeric:tabular-nums; }
+  .method-steps .step{ display:flex; align-items:center; gap:.5rem; }
+  .method-steps .step .tag{ font-size:.7rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; min-width:5.5ch; }
+
+  /* ---------- multiplication grid ---------- */
+  .grid-meta{ display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin:1.25rem 0; }
+  .pill-stat{
+    font-family:'Baloo 2'; font-weight:700; background:var(--court-alt);
+    border-radius:999px; padding:.5rem 1rem; border:2px solid var(--line);
+  }
+  .grid-scroll{ overflow-x:auto; padding-bottom:.5rem; }
+  table.mult-grid{ border-collapse:separate; border-spacing:6px; margin:0 auto; }
+  table.mult-grid th{
+    font-family:'Baloo 2'; color:var(--ping-deep); font-size:.95rem; font-weight:700;
+    min-width:2.6rem;
+  }
+  table.mult-grid th.corner{ color:var(--ink-soft); }
+  table.mult-grid td{ padding:0; }
+  .grid-cell{
+    width:2.6rem; height:2.6rem; border-radius:12px; border:2px solid var(--line);
+    background:var(--court-alt); color:var(--ink); font-weight:800; font-family:'Baloo 2';
+    cursor:pointer; font-size:.95rem; font-variant-numeric:tabular-nums;
+    transition:transform .15s cubic-bezier(.5,1.8,.6,1), background .2s ease;
+  }
+  .grid-cell:hover{ transform:scale(1.08); border-color:var(--ping); }
+  .grid-cell.revealed{ background:var(--ping); color:#fff; border-color:var(--ping-deep); }
+  .grid-cell.pop{ animation:pop .4s cubic-bezier(.5,1.8,.6,1); }
+  @keyframes pop{ 0%{ transform:scale(1) } 45%{ transform:scale(1.35) } 100%{ transform:scale(1) } }
+
+  /* ---------- division puzzle ---------- */
+  .puzzle{ margin-top:1.5rem; padding-top:1.5rem; border-top:2px dashed var(--line); }
+  .puzzle:first-of-type{ border-top:none; margin-top:0; padding-top:0; }
+  .puzzle h3{ font-size:1.2rem; }
+  .puzzle-tray{ display:flex; flex-wrap:wrap; gap:.6rem; margin:1rem 0; min-height:3rem; }
+  .ball{
+    width:2.6rem; height:2.6rem; border-radius:8px; border:2px solid var(--ink);
+    background:linear-gradient(135deg,#fff, var(--bounce) 55%); cursor:pointer;
+    box-shadow:0 3px 0 var(--bounce-deep); transform:rotate(45deg);
+    transition:transform .15s ease;
+  }
+  .ball:hover{ transform:rotate(45deg) translateY(-2px); }
+  .ball.selected{ outline:3px solid var(--zest); outline-offset:2px; transform:rotate(45deg) scale(1.15); }
+  .bins{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1rem; }
+  .bin{
+    border:3px dashed var(--line); border-radius:18px; padding:.75rem;
+    min-height:5.5rem; background:var(--court-alt); cursor:pointer;
+    display:flex; flex-wrap:wrap; gap:.4rem; align-content:flex-start;
+  }
+  .bin:hover{ border-color:var(--bounce); }
+  .bin .count{ font-family:'Baloo 2'; font-weight:800; color:var(--bounce-deep); width:100%; }
+  .puzzle-actions{ display:flex; align-items:center; gap:1rem; margin-top:1rem; flex-wrap:wrap; }
+  .puzzle-feedback{ font-weight:800; font-family:'Baloo 2'; }
+  .puzzle-feedback.ok{ color:var(--green-deep); }
+  .puzzle-feedback.no{ color:var(--ping-deep); }
+  .puzzle.solved .bin{ border-style:solid; border-color:var(--green); }
+
+  /* ---------- quiz ---------- */
+  .quiz-card{ margin-top:1.5rem; }
+  .quiz-progress{ display:flex; gap:.4rem; margin-bottom:1rem; }
+  .quiz-progress span{ width:1.6rem; height:.5rem; border-radius:999px; background:var(--line); }
+  .quiz-progress span.done{ background:var(--zest); }
+  .quiz-q{ font-family:'Baloo 2'; font-size:1.4rem; margin:.5rem 0 1.25rem; }
+  .quiz-choices{ display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
+  @media (max-width:520px){ .quiz-choices{ grid-template-columns:1fr; } }
+  .choice{
+    font-family:'Baloo 2'; font-size:1.15rem; font-weight:700; text-align:left;
+    padding:.9rem 1.1rem; border-radius:16px; border:3px solid var(--line);
+    background:var(--court-alt); cursor:pointer; font-variant-numeric:tabular-nums;
+  }
+  .choice:hover{ border-color:var(--zest); }
+  .choice.correct{ background:var(--green); border-color:var(--green-deep); color:#fff; }
+  .choice.wrong{ background:var(--ping); border-color:var(--ping-deep); color:#fff; }
+  .choice[disabled]{ cursor:default; }
+  .quiz-feedback{ margin-top:1rem; font-weight:800; min-height:1.6rem; }
+  .quiz-done{ text-align:center; }
+  .stars-earned{ font-size:2.4rem; letter-spacing:.2rem; }
+
+  /* ---------- arcade ---------- */
+  .arcade-stats{ display:flex; gap:.75rem; flex-wrap:wrap; align-items:center; }
+  .arcade-timer-track{ height:.9rem; border-radius:999px; background:var(--court-alt); border:2px solid var(--line); overflow:hidden; }
+  .arcade-timer-fill{ height:100%; width:100%; background:linear-gradient(90deg,var(--zest),var(--ping)); border-radius:999px; transition:width .12s linear; }
+  .arcade-problem{ font-family:'Baloo 2'; font-weight:800; font-size:1.9rem; margin:1.1rem 0; font-variant-numeric:tabular-nums; }
+  .choice.timeout{ background:var(--court-alt); border-color:var(--line); opacity:.6; }
+
+  /* ---------- progress / stickers ---------- */
+  .bar-track{ background:var(--court-alt); border:2px solid var(--line); border-radius:999px; height:1.6rem; overflow:hidden; }
+  .bar-fill{ height:100%; background:linear-gradient(90deg,var(--green),var(--bounce)); border-radius:999px; transition:width .5s cubic-bezier(.4,1.4,.4,1); width:0%; }
+  .stickers{ display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:1.75rem; }
+  .sticker{
+    text-align:center; padding:1rem; border-radius:18px; border:2px dashed var(--line);
+    background:var(--court-alt);
+  }
+  .sticker.unlocked{ border-style:solid; border-color:var(--green); background:var(--card); }
+  .sticker .mascot{ width:64px; height:64px; margin:0 auto .5rem; filter:grayscale(1) opacity(.45); }
+  .sticker.unlocked .mascot{ filter:none; }
+  .sticker .label{ font-weight:800; font-size:.85rem; }
+  .sticker .status{ display:block; font-size:.72rem; color:var(--ink-soft); margin-top:.15rem; }
+  .sticker.unlocked .status{ color:var(--green-deep); }
+
+  /* ---------- parent section ---------- */
+  .tips{ list-style:none; margin:1.25rem 0; padding:0; display:grid; gap:.8rem; }
+  .tips li{ display:flex; gap:.7rem; align-items:flex-start; }
+  .tips li::before{ content:'✓'; font-weight:900; color:var(--green-deep); background:color-mix(in srgb, var(--green) 20%, var(--card)); border-radius:50%; width:1.6rem; height:1.6rem; flex:none; display:flex; align-items:center; justify-content:center; }
+
+  /* ---------- footer ---------- */
+  footer{ text-align:center; padding:2.5rem 0 3.5rem; color:var(--ink-soft); font-size:.9rem; }
+
+  /* ---------- print worksheet ---------- */
+  #worksheet{ display:none; }
+  .ws-row{ display:flex; justify-content:space-between; border-bottom:1px dashed #999; padding:.4rem 0; }
+  @media print{
+    body *{ visibility:hidden; }
+    #worksheet, #worksheet *{ visibility:visible; }
+    #worksheet{ display:block; position:absolute; left:0; top:0; width:100%; color:#000; }
+    .ws-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 2rem; }
+  }
+</style>
+</head>
+<body>
+
+
+<a class="skip-link" href="#level1">Skip to the games</a>
+
+<nav class="topnav">
+  <div class="wrap">
+    <div class="brand"><span class="dot" aria-hidden="true"></span> Teenie Ping</div>
+    <div class="navlinks">
+      <a href="#level1">Story</a>
+      <a href="#multiply">× Multiply</a>
+      <a href="#divide">÷ Divide</a>
+      <a href="#quiz">Quiz</a>
+      <a href="#arcade">Power Rush</a>
+      <a href="#progress">Collection</a>
+      <a href="#grownups">Grown-Ups</a>
+    </div>
+    <button id="narrateToggle" class="narrate-toggle" type="button" aria-pressed="false">
+      <span aria-hidden="true">🔊</span> Read Aloud
+    </button>
+  </div>
+</nav>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <div class="eyebrow"><span class="level-dot" style="--accent:var(--ping)">★</span> A Catch! Teenieping‑Inspired Adventure</div>
+        <h1>Catch the power of <span class="hl">multiplication</span> &amp; <span class="hl">division</span>!</h1>
+        <p class="lede" style="margin-top:1rem;">Play with Timesping, Shareping, Starping and Winping — four tiny math fairies with a power gem each. Complete their challenges to catch every one and fill your Teenieping collection.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#level1">Start the Adventure →</a>
+          <button class="speak-btn" data-speak="Catch the power of multiplication and division! Play with Timesping, Shareping, Starping and Winping, four tiny math fairies. Complete their challenges to catch every one." aria-label="Read this introduction aloud" type="button">🔊</button>
+        </div>
+      </div>
+      <div class="hero-stage" aria-hidden="true">
+        <div class="float-ball" style="width:26px;height:26px;background:var(--zest);top:10%;left:8%;"></div>
+        <div class="float-ball" style="width:18px;height:18px;background:var(--green);top:70%;left:4%;animation-delay:1s;"></div>
+        <div class="float-ball" style="width:22px;height:22px;background:var(--bounce);top:6%;left:78%;animation-delay:.5s;"></div>
+        <div class="float-ball" style="width:16px;height:16px;background:var(--ping);top:78%;left:82%;animation-delay:1.5s;"></div>
+        <div style="position:absolute; left:18%; top:28%; text-align:center;">
+          <div class="mascot ping bounce">
+            <div class="wing l"></div><div class="wing r"></div>
+            <div class="antenna"></div><div class="gem"><span class="sym">×</span></div><div class="body"></div>
+            <div class="eye l"></div><div class="eye r"></div>
+            <div class="cheek l"></div><div class="cheek r"></div><div class="smile"></div>
+          </div>
+          <div class="mascot-name">Timesping</div>
+        </div>
+        <div style="position:absolute; right:14%; top:42%; text-align:center;">
+          <div class="mascot bouncec bounce">
+            <div class="wing l"></div><div class="wing r"></div>
+            <div class="antenna"></div><div class="gem"><span class="sym">÷</span></div><div class="body"></div>
+            <div class="eye l"></div><div class="eye r"></div>
+            <div class="cheek l"></div><div class="cheek r"></div><div class="smile"></div>
+          </div>
+          <div class="mascot-name">Shareping</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL 1: STORY -->
+  <section id="level1">
+    <div class="wrap card">
+      <div class="eyebrow"><span class="level-dot">1</span> Meet the Teeniepings</div>
+      <h2 class="title">Why does math matter to Timesping?</h2>
+      <div class="story-grid">
+        <div>
+          <div style="display:flex; gap:.9rem; align-items:flex-start;">
+            <div class="mascot ping" style="width:56px;height:56px; flex:none;">
+              <div class="wing l"></div><div class="wing r"></div>
+              <div class="antenna"></div><div class="gem" style="width:14px;height:14px;top:-24px;"><span class="sym" style="font-size:.55rem;">×</span></div><div class="body"></div>
+              <div class="eye l"></div><div class="eye r"></div>
+              <div class="cheek l"></div><div class="cheek r"></div><div class="smile"></div>
+            </div>
+            <div class="speech-bubble">
+              <p><strong>Timesping:</strong> "Every morning I pick apples with my friends! Instead of counting one‑by‑one, I count in <strong>groups</strong> — that's multiplying!" <button class="speak-btn" style="width:1.9rem;height:1.9rem;font-size:.85rem;vertical-align:middle;" data-speak="Every morning I pick apples with my friends. Instead of counting one by one, I count in groups, that's multiplying!" aria-label="Read Timesping's story aloud" type="button">🔊</button></p>
+            </div>
+          </div>
+          <p style="margin-top:1.5rem;">Timesping picks <strong>3 rows</strong> of <strong>4 apples</strong>. That's <strong>3 × 4</strong>:</p>
+          <div class="apple-rows" aria-hidden="true">
+            <div class="apple-row"><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span></div>
+            <div class="apple-row"><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span></div>
+            <div class="apple-row"><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span></div>
+          </div>
+          <p class="sum-line">3 × 4 = 12 apples!</p>
+          <div class="method-card">
+            <p class="method-title">Bigger numbers, same idea: 23 × 4 <button class="speak-btn" style="width:1.9rem;height:1.9rem;font-size:.85rem;vertical-align:middle;" data-speak="Bigger numbers, same idea. 23 times 4. Break 23 into 20 plus 3. 20 times 4 is 80. 3 times 4 is 12. 80 plus 12 is 92." aria-label="Read the multiplication method aloud" type="button">🔊</button></p>
+            <div class="method-steps">
+              <div class="step"><span class="tag">Split</span> 23 = <strong>20</strong> + <strong>3</strong></div>
+              <div class="step"><span class="tag">Tens</span> 20 × 4 = <strong>80</strong></div>
+              <div class="step"><span class="tag">Ones</span> 3 × 4 = <strong>12</strong></div>
+              <div class="step"><span class="tag">Add</span> 80 + 12 = <strong>92</strong></div>
+            </div>
+            <p class="sum-line">23 × 4 = 92!</p>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex; gap:.9rem; align-items:flex-start;">
+            <div class="mascot bouncec" style="width:56px;height:56px; flex:none;">
+              <div class="wing l"></div><div class="wing r"></div>
+              <div class="antenna"></div><div class="gem" style="width:14px;height:14px;top:-24px;"><span class="sym" style="font-size:.55rem;">÷</span></div><div class="body"></div>
+              <div class="eye l"></div><div class="eye r"></div>
+              <div class="cheek l"></div><div class="cheek r"></div><div class="smile"></div>
+            </div>
+            <div class="speech-bubble" style="--accent:var(--bounce);">
+              <p><strong>Shareping:</strong> "Later, I share my 12 apples fairly with <strong>3</strong> friends. That's <strong>dividing</strong> — the opposite of multiplying!" <button class="speak-btn" style="width:1.9rem;height:1.9rem;font-size:.85rem;vertical-align:middle;" data-speak="Later, I share my 12 apples fairly with 3 friends. That's dividing, the opposite of multiplying!" aria-label="Read Shareping's sharing story aloud" type="button">🔊</button></p>
+            </div>
+          </div>
+          <p style="margin-top:1.5rem;">12 apples shared into <strong>3</strong> equal baskets is <strong>12 ÷ 3</strong>:</p>
+          <div class="apple-rows" aria-hidden="true">
+            <div class="apple-row"><span class="apple">🧺</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span></div>
+            <div class="apple-row"><span class="apple">🧺</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span></div>
+            <div class="apple-row"><span class="apple">🧺</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span><span class="apple">🍎</span></div>
+          </div>
+          <p class="sum-line" style="color:var(--bounce-deep);">12 ÷ 3 = 4 apples each!</p>
+          <div class="method-card">
+            <p class="method-title">Bigger numbers, same idea: 96 ÷ 4 <button class="speak-btn" style="width:1.9rem;height:1.9rem;font-size:.85rem;vertical-align:middle;" data-speak="Bigger numbers, same idea. 96 divided by 4. Break 96 into 80 plus 16. 80 divided by 4 is 20. 16 divided by 4 is 4. 20 plus 4 is 24." aria-label="Read the division method aloud" type="button">🔊</button></p>
+            <div class="method-steps">
+              <div class="step"><span class="tag">Split</span> 96 = <strong>80</strong> + <strong>16</strong></div>
+              <div class="step"><span class="tag">Tens</span> 80 ÷ 4 = <strong>20</strong></div>
+              <div class="step"><span class="tag">Ones</span> 16 ÷ 4 = <strong>4</strong></div>
+              <div class="step"><span class="tag">Add</span> 20 + 4 = <strong>24</strong></div>
+            </div>
+            <p class="sum-line" style="color:var(--bounce-deep);">96 ÷ 4 = 24!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL 2: MULTIPLICATION GRID -->
+  <section id="multiply">
+    <div class="wrap card">
+      <div class="eyebrow"><span class="level-dot">2</span> Multiplication Court</div>
+      <h2 class="title">Tap a square to reveal the answer</h2>
+      <p class="lede" style="margin-top:.5rem;">Every square hides a little burst of Timesping's power. Tap any square in the grid and she'll reveal what the two numbers make when multiplied. <button class="speak-btn" data-speak="Tap any square in the grid to reveal what the two numbers make when multiplied." aria-label="Read instructions aloud" type="button">🔊</button></p>
+      <div class="grid-meta">
+        <div class="pill-stat">Revealed: <span id="gridCount">0</span> / 100</div>
+        <button class="btn small ghost" id="gridReset" type="button" style="border:2px solid var(--line); box-shadow:none;">Hide All Again</button>
+      </div>
+      <div class="grid-scroll">
+        <table class="mult-grid" id="multGrid" aria-label="Multiplication grid from 1 to 10"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL 3: DIVISION PUZZLE -->
+  <section id="divide">
+    <div class="wrap card">
+      <div class="eyebrow"><span class="level-dot">3</span> Division Rally</div>
+      <h2 class="title">Share Shareping's gems equally</h2>
+      <p class="lede" style="margin-top:.5rem;">Tap a gem to pick it up, then tap a group to drop it in. Share every gem so each group has the <em>same</em> amount. <button class="speak-btn" data-speak="Tap a gem to pick it up, then tap a group to drop it in. Share every gem so each group has the same amount." aria-label="Read instructions aloud" type="button">🔊</button></p>
+      <div id="puzzles"></div>
+    </div>
+  </section>
+
+  <!-- LEVEL 4: QUIZ -->
+  <section id="quiz">
+    <div class="wrap card">
+      <div class="eyebrow"><span class="level-dot">4</span> GEP Mission Trials</div>
+      <h2 class="title">Six tricky missions, six shiny stars</h2>
+      <p class="lede" style="margin-top:.5rem;">Starping only tests true gifted-level thinkers! These are Primary 3 GEP-style challenge questions — the kind used in Singapore's Gifted Education Programme screening. Work through each mission step by step, and she'll always show you her secret method.</p>
+      <div class="quiz-card">
+        <div class="quiz-progress" id="quizProgress"></div>
+        <div id="quizArea"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL 5: ARCADE -->
+  <section id="arcade">
+    <div class="wrap card">
+      <div class="eyebrow"><span class="level-dot">5</span> Power Rush Arcade</div>
+      <h2 class="title">Catch the answer before time runs out</h2>
+      <p class="lede" style="margin-top:.5rem;">Quick-fire GEP-style number patterns, logic and word problems, against the clock. Tap the correct answer before Winping's timer bar empties to keep your streak alive! <button class="speak-btn" data-speak="Quick fire GEP style number patterns, logic and word problems, against the clock. Tap the correct answer before the timer bar empties to keep your streak alive." aria-label="Read instructions aloud" type="button">🔊</button></p>
+
+      <div id="arcadeIntro" style="margin-top:1.5rem;">
+        <div class="arcade-stats">
+          <span class="pill-stat">Best streak: <span id="arcadeBestDisplay">0</span></span>
+          <span class="pill-stat">Caught: <span id="arcadeCaughtDisplay">0</span></span>
+        </div>
+        <button class="btn" id="arcadeStart" type="button" style="margin-top:1rem; background:var(--zest); color:var(--ink);">▶ Start Power Rush</button>
+      </div>
+
+      <div id="arcadeGame" style="display:none; margin-top:1.5rem;">
+        <div class="arcade-stats">
+          <span class="pill-stat" id="arcadeRoundLabel">Round 1 / 10</span>
+          <span class="pill-stat">Streak: <span id="arcadeStreakDisplay">0</span> 🔥</span>
+        </div>
+        <div class="arcade-timer-track" style="margin-top:.85rem;"><div class="arcade-timer-fill" id="arcadeTimerFill"></div></div>
+        <p class="arcade-problem" id="arcadeProblem"></p>
+        <div class="quiz-choices" id="arcadeChoices"></div>
+        <p class="quiz-feedback" id="arcadeFeedback"></p>
+      </div>
+
+      <div id="arcadeSummary" class="quiz-done" style="display:none; margin-top:1.5rem;">
+        <div class="stars-earned" id="arcadeSummaryStars"></div>
+        <p id="arcadeSummaryText" style="font-family:'Baloo 2'; font-size:1.3rem; margin-top:1rem;"></p>
+        <button class="btn" id="arcadeReplay" type="button" style="margin-top:1rem;">Play Power Rush Again</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL 6: PROGRESS -->
+  <section id="progress">
+    <div class="wrap card">
+      <div class="eyebrow"><span class="level-dot">6</span> Teenieping Collection</div>
+      <h2 class="title">Catch every Teenieping</h2>
+      <p class="lede" style="margin-top:.5rem;">Explore squares, finish puzzles, ace the quiz and win Power Rush rounds to fill your bar and catch Timesping, Shareping, Starping and Winping, one at a time.</p>
+      <div style="margin-top:1.5rem;">
+        <div class="bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar" aria-label="Overall adventure progress">
+          <div class="bar-fill" id="progressFill"></div>
+        </div>
+        <p style="margin-top:.5rem; font-weight:800;"><span id="progressPct">0</span>% complete</p>
+      </div>
+      <div class="stickers" id="stickers"></div>
+    </div>
+  </section>
+
+  <!-- GROWN-UPS -->
+  <section id="grownups">
+    <div class="wrap card">
+      <div class="eyebrow">For Parents &amp; Teachers</div>
+      <h2 class="title">Keep the learning going offline</h2>
+      <ul class="tips">
+        <li>Use snacks, toy blocks or stairs to make groups — real objects make multiplication click faster than worksheets alone.</li>
+        <li>Turn walks into skip‑counting games: count by 2s, 5s or 10s together out loud.</li>
+        <li>Frame division as fair sharing: "If 3 friends split these grapes evenly, how many does each get?"</li>
+        <li>Celebrate effort and strategy, not just correct answers — it keeps kids willing to try tricky ones.</li>
+        <li>Keep sessions short. Ten focused minutes beats an hour of frustration.</li>
+      </ul>
+      <button class="btn" id="printWorksheet" type="button" style="background:var(--ink);">🖨️ Print a Practice Worksheet</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Made with sparkle, for young mathematicians ages 6–10. Inspired by the world of Catch! Teenieping — an independent fan tribute, not affiliated with SAMG Entertainment. 💎</div>
+</footer>
+
+<div id="worksheet">
+  <h2 style="font-family:'Baloo 2';">Teenie Ping Math Adventure — Practice Worksheet</h2>
+  <p>Name: _______________________  &nbsp;&nbsp; Date: _______________</p>
+  <div class="ws-grid" id="wsGrid"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- state ---------------- */
+  var STORAGE_KEY = "teeniePingMathAdventure.v1";
+  var state = Object.assign({
+    gridRevealed: [],
+    puzzlesSolved: [],
+    quizCorrect: 0,
+    quizAnswered: 0,
+    arcadeCorrect: 0,
+    arcadeBestStreak: 0,
+    narrate: false
+  }, loadState());
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    }catch(e){ return {}; }
+  }
+  function saveState(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  /* ---------------- sound ---------------- */
+  var audioCtx = null;
+  function ping(freq){
+    try{
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      var o = audioCtx.createOscillator();
+      var g = audioCtx.createGain();
+      o.type = "sine";
+      o.frequency.value = freq || 660;
+      g.gain.value = 0.0001;
+      o.connect(g); g.connect(audioCtx.destination);
+      var t = audioCtx.currentTime;
+      g.gain.exponentialRampToValueAtTime(0.15, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+      o.start(t); o.stop(t + 0.3);
+    }catch(e){}
+  }
+
+  /* ---------------- narration ---------------- */
+  function speak(text){
+    if(!("speechSynthesis" in window)) return;
+    try{
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.95; u.pitch = 1.1;
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  document.addEventListener("click", function(e){
+    var btn = e.target.closest("[data-speak]");
+    if(btn){ speak(btn.getAttribute("data-speak")); }
+  });
+  var narrateToggle = document.getElementById("narrateToggle");
+  function renderNarrateToggle(){
+    narrateToggle.setAttribute("aria-pressed", state.narrate ? "true" : "false");
+  }
+  narrateToggle.addEventListener("click", function(){
+    state.narrate = !state.narrate;
+    saveState();
+    renderNarrateToggle();
+    speak(state.narrate ? "Read aloud is on." : "Read aloud is off.");
+  });
+  renderNarrateToggle();
+  function autoSpeak(text){ if(state.narrate) speak(text); }
+
+  /* ---------------- progress + stickers ---------------- */
+  var STICKERS = [
+    {threshold:25, name:"Timesping", cls:"ping",    sym:"×"},
+    {threshold:50, name:"Shareping", cls:"bouncec", sym:"÷"},
+    {threshold:75, name:"Starping",  cls:"zest",    sym:"★"},
+    {threshold:100,name:"Winping",   cls:"green",   sym:"✓"}
+  ];
+  var stickersEl = document.getElementById("stickers");
+  stickersEl.innerHTML = STICKERS.map(function(s){
+    return '<div class="sticker" data-threshold="'+s.threshold+'" data-name="'+s.name+'">' +
+      '<div class="mascot '+s.cls+'"><div class="wing l"></div><div class="wing r"></div>' +
+      '<div class="antenna"></div><div class="gem"><span class="sym">'+s.sym+'</span></div><div class="body"></div>' +
+      '<div class="eye l"></div><div class="eye r"></div><div class="cheek l"></div><div class="cheek r"></div><div class="smile"></div></div>' +
+      '<div class="label">'+s.name+'<span class="status">Not caught yet</span></div></div>';
+  }).join("");
+
+  function computeProgress(){
+    var gridPct = Math.min(state.gridRevealed.length / 20, 1) * 20;
+    var puzzlePct = Math.min(state.puzzlesSolved.length / 4, 1) * 20;
+    var quizPct = Math.min(state.quizCorrect / 6, 1) * 20;
+    var arcadePct = Math.min(state.arcadeCorrect / 8, 1) * 20;
+    var basePct = gridPct + puzzlePct + quizPct + arcadePct;
+    var allDone = state.gridRevealed.length >= 20 && state.puzzlesSolved.length >= 4 && state.quizCorrect >= 6 && state.arcadeCorrect >= 8;
+    var bonus = allDone ? 20 : 0;
+    return Math.round(Math.min(basePct + bonus, 100));
+  }
+  function updateProgress(announce){
+    var pct = computeProgress();
+    document.getElementById("progressFill").style.width = pct + "%";
+    document.getElementById("progressPct").textContent = pct;
+    document.getElementById("progressBar").setAttribute("aria-valuenow", pct);
+    var unlockedNew = null;
+    document.querySelectorAll(".sticker").forEach(function(el){
+      var t = Number(el.getAttribute("data-threshold"));
+      var wasUnlocked = el.classList.contains("unlocked");
+      var nowUnlocked = pct >= t;
+      if(nowUnlocked && !wasUnlocked) unlockedNew = el.getAttribute("data-name");
+      el.classList.toggle("unlocked", nowUnlocked);
+      el.querySelector(".status").textContent = nowUnlocked ? "Caught!" : "Not caught yet";
+    });
+    if(announce && unlockedNew){ autoSpeak("You caught " + unlockedNew + "!"); }
+    saveState();
+  }
+
+  /* ---------------- multiplication grid ---------------- */
+  var gridTable = document.getElementById("multGrid");
+  (function buildGrid(){
+    var html = "<tr><th class='corner'>×</th>";
+    for(var c=1;c<=10;c++) html += "<th>"+c+"</th>";
+    html += "</tr>";
+    for(var r=1;r<=10;r++){
+      html += "<tr><th>"+r+"</th>";
+      for(var c2=1;c2<=10;c2++){
+        html += "<td><button type='button' class='grid-cell' data-r='"+r+"' data-c='"+c2+"' aria-label='"+r+" times "+c2+"'>?</button></td>";
+      }
+      html += "</tr>";
+    }
+    gridTable.innerHTML = html;
+  })();
+  function refreshGridCount(){ document.getElementById("gridCount").textContent = state.gridRevealed.length; }
+  function revealCell(btn, silent){
+    var r = btn.getAttribute("data-r"), c = btn.getAttribute("data-c");
+    var key = r+"x"+c;
+    btn.textContent = String(Number(r)*Number(c));
+    btn.classList.add("revealed");
+    btn.setAttribute("aria-label", r+" times "+c+" equals "+(Number(r)*Number(c)));
+    if(!silent){
+      btn.classList.remove("pop"); void btn.offsetWidth; btn.classList.add("pop");
+      ping(440 + Number(r)*Number(c)*4);
+      autoSpeak(r + " times " + c + " equals " + (Number(r)*Number(c)));
+    }
+    if(state.gridRevealed.indexOf(key) === -1){
+      state.gridRevealed.push(key);
+      refreshGridCount();
+      updateProgress(true);
+    }
+  }
+  gridTable.addEventListener("click", function(e){
+    var btn = e.target.closest(".grid-cell");
+    if(!btn || btn.classList.contains("revealed")) return;
+    revealCell(btn, false);
+  });
+  document.getElementById("gridReset").addEventListener("click", function(){
+    gridTable.querySelectorAll(".grid-cell").forEach(function(btn){
+      btn.textContent = "?"; btn.classList.remove("revealed");
+      var r=btn.getAttribute("data-r"), c=btn.getAttribute("data-c");
+      btn.setAttribute("aria-label", r+" times "+c);
+    });
+  });
+  (function restoreGrid(){
+    state.gridRevealed.forEach(function(key){
+      var parts = key.split("x");
+      var btn = gridTable.querySelector('.grid-cell[data-r="'+parts[0]+'"][data-c="'+parts[1]+'"]');
+      if(btn) revealCell(btn, true);
+    });
+    refreshGridCount();
+  })();
+
+  /* ---------------- division puzzles ---------------- */
+  var PUZZLES = [
+    {id:"p1", total:12, groups:3},
+    {id:"p2", total:8,  groups:2},
+    {id:"p3", total:15, groups:5},
+    {id:"p4", total:20, groups:4}
+  ];
+  var puzzlesEl = document.getElementById("puzzles");
+  puzzlesEl.innerHTML = PUZZLES.map(function(p){
+    var balls = "";
+    for(var i=0;i<p.total;i++) balls += "<button type='button' class='ball' data-puzzle='"+p.id+"' data-ball='"+i+"' aria-label='Gem "+(i+1)+"'></button>";
+    var bins = "";
+    for(var g=0; g<p.groups; g++) bins += "<div class='bin' data-puzzle='"+p.id+"' data-bin='"+g+"' role='button' tabindex='0' aria-label='Group "+(g+1)+"'><div class='count'>Group "+(g+1)+": 0</div></div>";
+    return "<div class='puzzle' data-puzzle='"+p.id+"' data-total='"+p.total+"' data-groups='"+p.groups+"'>" +
+      "<h3>Share "+p.total+" gems into "+p.groups+" equal groups</h3>" +
+      "<div class='puzzle-tray' data-tray='"+p.id+"'>"+balls+"</div>" +
+      "<div class='bins'>"+bins+"</div>" +
+      "<div class='puzzle-actions'>" +
+        "<button type='button' class='btn small' data-check='"+p.id+"' style='background:var(--bounce);'>Check Groups</button>" +
+        "<span class='puzzle-feedback' data-feedback='"+p.id+"'></span>" +
+      "</div>" +
+    "</div>";
+  }).join("");
+
+  var puzzleAssignments = {}; // ballKey -> binIndex or null
+  var selectedBall = null; // {puzzle, ball}
+
+  PUZZLES.forEach(function(p){ puzzleAssignments[p.id] = {}; });
+
+  function ballEl(puzzleId, ballId){ return puzzlesEl.querySelector('.ball[data-puzzle="'+puzzleId+'"][data-ball="'+ballId+'"]'); }
+  function binEl(puzzleId, binIdx){ return puzzlesEl.querySelector('.bin[data-puzzle="'+puzzleId+'"][data-bin="'+binIdx+'"]'); }
+  function trayEl(puzzleId){ return puzzlesEl.querySelector('.puzzle-tray[data-tray="'+puzzleId+'"]'); }
+
+  function renderBin(puzzleId, binIdx){
+    var bin = binEl(puzzleId, binIdx);
+    var count = bin.querySelectorAll(".ball").length;
+    bin.querySelector(".count").textContent = "Group "+(binIdx+1)+": "+count;
+  }
+  function placeBall(puzzleId, ballId, target){
+    var ball = ballEl(puzzleId, ballId);
+    if(target === "tray"){ trayEl(puzzleId).appendChild(ball); puzzleAssignments[puzzleId][ballId] = null; }
+    else{ binEl(puzzleId, target).appendChild(ball); puzzleAssignments[puzzleId][ballId] = target; }
+    ball.classList.remove("selected");
+    for(var g=0; g<10; g++){ var b = binEl(puzzleId, g); if(b) renderBin(puzzleId, g); }
+  }
+
+  puzzlesEl.addEventListener("click", function(e){
+    var ball = e.target.closest(".ball");
+    var bin = e.target.closest(".bin");
+    if(ball){
+      var puzzleId = ball.getAttribute("data-puzzle"), ballId = ball.getAttribute("data-ball");
+      if(ball.parentElement.classList.contains("bin")){
+        placeBall(puzzleId, ballId, "tray");
+        return;
+      }
+      puzzlesEl.querySelectorAll('.ball.selected').forEach(function(b){ b.classList.remove("selected"); });
+      if(selectedBall && selectedBall.puzzle === puzzleId && selectedBall.ball === ballId){
+        selectedBall = null;
+      } else {
+        ball.classList.add("selected");
+        selectedBall = {puzzle:puzzleId, ball:ballId};
+      }
+      return;
+    }
+    if(bin){
+      var puzzleId2 = bin.getAttribute("data-puzzle"), binIdx = Number(bin.getAttribute("data-bin"));
+      if(selectedBall && selectedBall.puzzle === puzzleId2){
+        placeBall(puzzleId2, selectedBall.ball, binIdx);
+        selectedBall = null;
+      }
+      return;
+    }
+    var checkBtn = e.target.closest("[data-check]");
+    if(checkBtn){
+      checkPuzzle(checkBtn.getAttribute("data-check"));
+    }
+  });
+  puzzlesEl.addEventListener("keydown", function(e){
+    if(e.key !== "Enter" && e.key !== " ") return;
+    var bin = e.target.closest(".bin");
+    if(bin){ e.preventDefault(); bin.click(); }
+  });
+
+  function checkPuzzle(puzzleId){
+    var puzzleDiv = puzzlesEl.querySelector('.puzzle[data-puzzle="'+puzzleId+'"]');
+    var total = Number(puzzleDiv.getAttribute("data-total"));
+    var groups = Number(puzzleDiv.getAttribute("data-groups"));
+    var feedback = puzzleDiv.querySelector('[data-feedback="'+puzzleId+'"]');
+    var counts = [];
+    for(var g=0; g<groups; g++) counts.push(binEl(puzzleId, g).querySelectorAll(".ball").length);
+    var placedTotal = counts.reduce(function(a,b){return a+b;},0);
+    var allEqual = counts.every(function(c){ return c === counts[0]; });
+    if(placedTotal < total){
+      feedback.textContent = "Keep sharing — " + (total-placedTotal) + " gem(s) still waiting!";
+      feedback.className = "puzzle-feedback no";
+      autoSpeak("Keep sharing, there are still gems waiting.");
+    } else if(!allEqual){
+      feedback.textContent = "Almost! Make sure every group has the same number.";
+      feedback.className = "puzzle-feedback no";
+      autoSpeak("Almost! Make sure every group has the same number.");
+    } else {
+      feedback.textContent = "Yes! " + total + " ÷ " + groups + " = " + counts[0] + " in each group!";
+      feedback.className = "puzzle-feedback ok";
+      puzzleDiv.classList.add("solved");
+      ping(720);
+      autoSpeak(total + " divided by " + groups + " equals " + counts[0] + " in each group! Great job!");
+      if(state.puzzlesSolved.indexOf(puzzleId) === -1){
+        state.puzzlesSolved.push(puzzleId);
+        updateProgress(true);
+      }
+    }
+  }
+  (function restorePuzzles(){
+    state.puzzlesSolved.forEach(function(id){
+      var puzzleDiv = puzzlesEl.querySelector('.puzzle[data-puzzle="'+id+'"]');
+      if(puzzleDiv) puzzleDiv.classList.add("solved");
+    });
+  })();
+
+  /* ---------------- quiz ---------------- */
+  var QUIZ = [
+    {q:"Mission 1 — Star Fountain: Pipe A alone fills the fountain in 4 hours. Pipe B alone fills it in 12 hours. If both pipes run together, how many hours to fill it?",
+     choices:[3,4,6,8], answer:3,
+     steps:["Rate A: 1/4 of fountain per hour","Rate B: 1/12 of fountain per hour","Add rates: 1/4 + 1/12 = 3/12 + 1/12 = 4/12 = 1/3","Time = 1 ÷ (1/3) = 3 hours"]},
+    {q:"Mission 2 — Enchanted Meadow: Winping counts Sparklebugs (2 legs) and Glimmerpaws (4 legs). Together there are 10 creatures and 28 legs. How many Glimmerpaws are there?",
+     choices:[4,3,5,6], answer:4,
+     steps:["If all 10 were Sparklebugs: 10 × 2 = 20 legs","Extra legs to explain: 28 − 20 = 8","Each Glimmerpaw adds 2 extra legs (4 − 2)","Glimmerpaws: 8 ÷ 2 = 4"]},
+    {q:"Mission 3 — Crystal Countdown: Starping must add every number from 1 to 30 to unlock the portal. What is the sum of all numbers from 1 to 30?",
+     choices:[465,450,480,440], answer:465,
+     steps:["Pair the ends: 1+30, 2+29, 3+28 ... each pair = 31","Number of pairs: 30 ÷ 2 = 15 pairs","Total: 15 × 31 = 465"]},
+    {q:"Mission 4 — Petal Trail: The magic petals of Chachaping follow a pattern: 2, 5, 11, 23, 47, ? What comes next?",
+     choices:[95,94,93,96], answer:95,
+     steps:["Check the rule: each number ×2, then +1","5 = 2×2+1, 11 = 5×2+1, 23 = 11×2+1, 47 = 23×2+1","Apply rule to 47: 47 × 2 = 94","94 + 1 = 95"]},
+    {q:"Mission 5 — Gem Vault: Two Teeniepings share 84 gems in total. Timesping has 20 more gems than Shareping. How many gems does Shareping have?",
+     choices:[32,42,52,22], answer:32,
+     steps:["Remove the extra: 84 − 20 = 64","Share the rest equally: 64 ÷ 2 = 32","Shareping has the smaller share: 32","Check: Timesping has 32 + 20 = 52, and 32 + 52 = 84 ✓"]},
+    {q:"Mission 6 — Gem Scales: 3 Sparkle Gems and 2 Moon Gems weigh 800 g together. 1 Sparkle Gem and 2 Moon Gems weigh 600 g together. How much does 1 Sparkle Gem weigh?",
+     choices:[100,150,200,50], answer:100,
+     steps:["Compare the two clues — both have 2 Moon Gems","Extra Sparkle Gems: 3 − 1 = 2 Sparkle Gems","Extra weight: 800 g − 600 g = 200 g","1 Sparkle Gem = 200 g ÷ 2 = 100 g"]}
+  ];
+  var quizArea = document.getElementById("quizArea");
+  var quizProgressEl = document.getElementById("quizProgress");
+  var quizIndex = 0;
+  var quizStars = 0;
+
+  quizProgressEl.innerHTML = QUIZ.map(function(){ return "<span></span>"; }).join("");
+
+  function renderQuiz(){
+    if(quizIndex >= QUIZ.length){
+      quizArea.innerHTML = "<div class='quiz-done'>" +
+        "<div class='stars-earned'>" + "⭐".repeat(quizStars) + "☆".repeat(QUIZ.length-quizStars) + "</div>" +
+        "<p style='font-family:\"Baloo 2\"; font-size:1.3rem; margin-top:1rem;'>You earned "+quizStars+" out of "+QUIZ.length+" stars!</p>" +
+        "<button class='btn' id='quizRetry' type='button' style='margin-top:1rem;'>Play the Quiz Again</button>" +
+      "</div>";
+      document.getElementById("quizRetry").addEventListener("click", function(){
+        quizIndex = 0; quizStars = 0;
+        quizProgressEl.querySelectorAll("span").forEach(function(s){ s.classList.remove("done"); });
+        renderQuiz();
+      });
+      autoSpeak("You earned " + quizStars + " out of " + QUIZ.length + " stars!");
+      return;
+    }
+    var item = QUIZ[quizIndex];
+    quizArea.innerHTML =
+      "<p class='quiz-q'>Question "+(quizIndex+1)+": "+item.q+
+      " <button class='speak-btn' style='width:1.9rem;height:1.9rem;font-size:.85rem;vertical-align:middle;' data-speak='"+item.q.replace(/×/,"times").replace(/÷/,"divided by")+"' type='button' aria-label='Read question aloud'>🔊</button></p>" +
+      "<div class='quiz-choices'>" +
+        item.choices.map(function(ch){ return "<button type='button' class='choice' data-value='"+ch+"'>"+ch+"</button>"; }).join("") +
+      "</div>" +
+      "<p class='quiz-feedback' id='quizFeedback'></p>" +
+      "<div class='method-card' id='quizSteps' style='display:none;'>" +
+        "<p class='method-title'>How it's done</p>" +
+        "<div class='method-steps'>" +
+          item.steps.map(function(s){
+            var parts = s.split(": ");
+            return parts.length>1 ? "<div class='step'><span class='tag'>"+parts[0]+"</span>"+parts[1]+"</div>" : "<div class='step'>"+s+"</div>";
+          }).join("") +
+        "</div>" +
+      "</div>";
+  }
+  quizArea.addEventListener("click", function(e){
+    var choice = e.target.closest(".choice");
+    if(!choice || choice.disabled) return;
+    var item = QUIZ[quizIndex];
+    var value = Number(choice.getAttribute("data-value"));
+    var correct = value === item.answer;
+    quizArea.querySelectorAll(".choice").forEach(function(c){ c.disabled = true; });
+    var feedback = document.getElementById("quizFeedback");
+    if(correct){
+      choice.classList.add("correct");
+      feedback.textContent = "Yes! The answer is " + item.answer + ". Mission complete!";
+      ping(760);
+      quizStars++;
+      state.quizCorrect++;
+      autoSpeak("Correct! Mission complete!");
+    } else {
+      choice.classList.add("wrong");
+      quizArea.querySelectorAll(".choice").forEach(function(c){ if(Number(c.getAttribute("data-value"))===item.answer) c.classList.add("correct"); });
+      feedback.textContent = "Not quite — the answer is " + item.answer + ". You'll get the next one!";
+      autoSpeak("Not quite. The answer is " + item.answer + ".");
+    }
+    document.getElementById("quizSteps").style.display = "block";
+    state.quizAnswered++;
+    quizProgressEl.querySelectorAll("span")[quizIndex].classList.add("done");
+    updateProgress(true);
+    saveState();
+    setTimeout(function(){ quizIndex++; renderQuiz(); }, 3200);
+  });
+  renderQuiz();
+
+  /* ---------------- arcade: power rush ---------------- */
+  var ARCADE_POOL = [
+    {q:"5, 10, 20, 40, ?", choices:[80,60,45,70], answer:80},
+    {q:"Sum of 1 to 10 = ?", choices:[55,50,45,60], answer:55},
+    {q:"5 spiders (8 legs) + 3 birds (2 legs) = ? legs", choices:[46,44,48,42], answer:46},
+    {q:"3, 6, 12, 24, ?", choices:[48,36,42,54], answer:48},
+    {q:"Pipe fills tank in 6 hrs, another in 3 hrs — together?", choices:[2,3,4,1], answer:2},
+    {q:"2 pens + 3 pencils = $16. 2 pens + 1 pencil = $10. 1 pencil = ?", choices:[3,2,4,5], answer:3},
+    {q:"7, 14, 28, 56, ?", choices:[112,98,84,120], answer:112},
+    {q:"15+16+17+18+19+20 = ?", choices:[105,100,110,95], answer:105},
+    {q:"Two numbers add to 24, differ by 6. Smaller number = ?", choices:[9,10,8,12], answer:9},
+    {q:"1, 4, 9, 16, ?", choices:[25,20,24,30], answer:25}
+  ];
+  var TIME_LIMIT = 10000;
+  var arcadeQueue = [], arcadeIdx = 0, arcadeScore = 0, arcadeStreak = 0;
+  var arcadeTimerHandle = null, arcadeTimeLeft = TIME_LIMIT;
+
+  function shuffled(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  document.getElementById("arcadeBestDisplay").textContent = state.arcadeBestStreak;
+  document.getElementById("arcadeCaughtDisplay").textContent = state.arcadeCorrect;
+
+  document.getElementById("arcadeStart").addEventListener("click", startArcade);
+  document.getElementById("arcadeReplay").addEventListener("click", startArcade);
+
+  function startArcade(){
+    arcadeQueue = shuffled(ARCADE_POOL);
+    arcadeIdx = 0; arcadeScore = 0; arcadeStreak = 0;
+    document.getElementById("arcadeIntro").style.display = "none";
+    document.getElementById("arcadeSummary").style.display = "none";
+    document.getElementById("arcadeGame").style.display = "block";
+    autoSpeak("Power Rush started! Catch the right answer before time runs out.");
+    renderArcadeRound();
+  }
+
+  function renderArcadeRound(){
+    clearInterval(arcadeTimerHandle);
+    if(arcadeIdx >= arcadeQueue.length){ finishArcade(); return; }
+    var item = arcadeQueue[arcadeIdx];
+    document.getElementById("arcadeRoundLabel").textContent = "Round " + (arcadeIdx+1) + " / " + arcadeQueue.length;
+    document.getElementById("arcadeStreakDisplay").textContent = arcadeStreak;
+    document.getElementById("arcadeProblem").textContent = item.q;
+    document.getElementById("arcadeFeedback").textContent = "";
+    var choiceOrder = shuffled(item.choices);
+    document.getElementById("arcadeChoices").innerHTML = choiceOrder.map(function(ch){
+      return "<button type='button' class='choice' data-value='"+ch+"'>"+ch+"</button>";
+    }).join("");
+    arcadeTimeLeft = TIME_LIMIT;
+    var fill = document.getElementById("arcadeTimerFill");
+    fill.style.width = "100%";
+    arcadeTimerHandle = setInterval(function(){
+      arcadeTimeLeft -= 100;
+      fill.style.width = Math.max(arcadeTimeLeft / TIME_LIMIT * 100, 0) + "%";
+      if(arcadeTimeLeft <= 0){ handleArcadeAnswer(null); }
+    }, 100);
+  }
+
+  document.getElementById("arcadeGame").addEventListener("click", function(e){
+    var choice = e.target.closest(".choice");
+    if(!choice || choice.disabled) return;
+    handleArcadeAnswer(Number(choice.getAttribute("data-value")), choice);
+  });
+
+  function handleArcadeAnswer(value, choiceEl){
+    clearInterval(arcadeTimerHandle);
+    var item = arcadeQueue[arcadeIdx];
+    var buttons = document.querySelectorAll("#arcadeChoices .choice");
+    buttons.forEach(function(c){ c.disabled = true; });
+    var feedback = document.getElementById("arcadeFeedback");
+    var correct = value === item.answer;
+    if(value === null){
+      buttons.forEach(function(c){ if(Number(c.getAttribute("data-value"))===item.answer) c.classList.add("correct"); else c.classList.add("timeout"); });
+      feedback.textContent = "Time's up! It was " + item.answer + ".";
+      feedback.className = "quiz-feedback";
+      arcadeStreak = 0;
+      autoSpeak("Time's up. The answer was " + item.answer + ".");
+    } else if(correct){
+      choiceEl.classList.add("correct");
+      feedback.textContent = "Caught it! " + item.q.replace("?", String(item.answer));
+      feedback.className = "quiz-feedback";
+      ping(820);
+      arcadeScore++; arcadeStreak++;
+      state.arcadeCorrect++;
+      if(arcadeStreak > state.arcadeBestStreak){ state.arcadeBestStreak = arcadeStreak; }
+      autoSpeak("Caught it!");
+    } else {
+      choiceEl.classList.add("wrong");
+      buttons.forEach(function(c){ if(Number(c.getAttribute("data-value"))===item.answer) c.classList.add("correct"); });
+      feedback.textContent = "Not quite — it was " + item.answer + ".";
+      feedback.className = "quiz-feedback";
+      arcadeStreak = 0;
+      autoSpeak("Not quite. The answer was " + item.answer + ".");
+    }
+    document.getElementById("arcadeStreakDisplay").textContent = arcadeStreak;
+    document.getElementById("arcadeBestDisplay").textContent = state.arcadeBestStreak;
+    document.getElementById("arcadeCaughtDisplay").textContent = state.arcadeCorrect;
+    updateProgress(true);
+    saveState();
+    arcadeIdx++;
+    setTimeout(renderArcadeRound, 1300);
+  }
+
+  function finishArcade(){
+    document.getElementById("arcadeGame").style.display = "none";
+    document.getElementById("arcadeSummary").style.display = "block";
+    var total = arcadeQueue.length;
+    document.getElementById("arcadeSummaryStars").textContent = "⭐".repeat(arcadeScore) + "☆".repeat(Math.max(total-arcadeScore,0));
+    document.getElementById("arcadeSummaryText").textContent =
+      "You caught " + arcadeScore + " out of " + total + ", with a best streak of " + state.arcadeBestStreak + "!";
+    document.getElementById("arcadeIntro").style.display = "block";
+    autoSpeak("Power Rush complete! You caught " + arcadeScore + " out of " + total + ".");
+  }
+
+  /* ---------------- printable worksheet ---------------- */
+  document.getElementById("printWorksheet").addEventListener("click", function(){
+    var problems = [];
+    for(var i=0;i<6;i++){
+      var a = 2 + Math.floor(Math.random()*9), b = 2 + Math.floor(Math.random()*9);
+      problems.push(a+" × "+b+" = ______");
+    }
+    for(var j=0;j<6;j++){
+      var d = 2 + Math.floor(Math.random()*9), q = 2 + Math.floor(Math.random()*9);
+      problems.push((d*q)+" ÷ "+d+" = ______");
+    }
+    document.getElementById("wsGrid").innerHTML = problems.map(function(p,i){
+      return "<div class='ws-row'><span>"+(i+1)+".</span><span>"+p+"</span></div>";
+    }).join("");
+    window.print();
+  });
+
+  /* ---------------- initial progress paint ---------------- */
+  updateProgress(false);
+})();
+</script>
+
+</body>
+</html>
